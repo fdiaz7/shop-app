@@ -6,10 +6,13 @@ import {
   Image,
   Button,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
 import Colors from "../../constants/Colors";
 import * as cartActions from "../../store/actions/cart";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import HeaderButton from "../../components/UI/HeaderButton";
 //Start
 const ProductDetailScreen = props => {
   const productId = props.navigation.getParam("productId");
@@ -25,7 +28,7 @@ const ProductDetailScreen = props => {
           color={Colors.primary}
           title='Agregar al carrito'
           onPress={() => {
-            dispatch(cartActions.addToCart(itemData.item));
+            dispatch(cartActions.addToCart(selectedProduct));
           }}
         />
       </View>
@@ -38,7 +41,18 @@ const ProductDetailScreen = props => {
 
 ProductDetailScreen.navigationOptions = navData => {
   return {
-    headerTitle: navData.navigation.getParam("productTitle")
+    headerTitle: navData.navigation.getParam("productTitle"),
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title='Cart'
+          iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+          onPress={() => {
+            navData.navigation.navigate("Cart");
+          }}
+        />
+      </HeaderButtons>
+    )
   };
 };
 
@@ -47,22 +61,22 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300
   },
+  actions: {
+    marginVertical: 10,
+    alignItems: "center"
+  },
   price: {
-    fontFamily: "open-sans-bold",
     fontSize: 20,
     color: "#888",
     textAlign: "center",
-    marginVertical: 20
+    marginVertical: 20,
+    fontFamily: "open-sans-bold"
   },
   description: {
     fontFamily: "open-sans",
     fontSize: 14,
     textAlign: "center",
     marginHorizontal: 20
-  },
-  actions: {
-    marginVertical: 10,
-    alignItems: "center"
   }
 });
 export default ProductDetailScreen;
