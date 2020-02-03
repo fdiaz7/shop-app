@@ -70,13 +70,6 @@ const EditProductScreen = props => {
       return;
     }
     if (editedProduct) {
-      console.log(
-        prodId,
-        formState.inputValues.title,
-        formState.inputValues.description,
-        formState.inputValues.imageUrl,
-        +formState.inputValues.price
-      );
       dispatch(
         productsActions.updateProduct(
           prodId,
@@ -98,6 +91,7 @@ const EditProductScreen = props => {
     }
     props.navigation.goBack();
   }, [dispatch, prodId, formState]);
+
   useEffect(() => {
     props.navigation.setParams({ submit: submitHandler });
   }, [submitHandler]);
