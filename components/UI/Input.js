@@ -31,7 +31,7 @@ const Input = props => {
   const { onInputChange, id } = props;
 
   useEffect(() => {
-    if (inputState.touched) {
+    if (inputState.touched || inputState.value.length != 0) {
       onInputChange(id, inputState.value, inputState.isValid);
     }
   }, [inputState, onInputChange]);

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   Button,
   StyleSheet,
-  ColorPropType
+  ActivityIndicator,
+  Alert
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
@@ -15,6 +16,8 @@ import * as cartActions from "../../store/actions/cart";
 import * as ordersActions from "../../store/actions/orders";
 
 const CartScreen = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
   const cartTotalAmount = useSelector(state => state.cart.totalAmount);
   const cartItems = useSelector(state => {
     const transformeCartItem = [];
@@ -32,6 +35,22 @@ const CartScreen = () => {
     );
   });
   const dispatch = useDispatch();
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Algo salio mal", error, [{ text: "ok" }]);
+    }
+  }, [error]);
+
+  const sendOrdenHandler = async () => {
+    setIsLoading(true);
+    try {
+      await dispatch(ordersActions.addOrder(cartItems, cartTotalAmount));
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <View style={styles.screen}>
       <Card style={styles.summary}>
@@ -41,14 +60,16 @@ const CartScreen = () => {
             ${Math.round(cartTotalAmount.toFixed(2) * 100) / 100}
           </Text>
         </Text>
-        <Button
-          color={Colors.accent}
-          title='Crear Pedido'
-          disabled={cartItems.length === 0}
-          onPress={() =>
-            dispatch(ordersActions.addOrder(cartItems, cartTotalAmount))
-          }
-        />
+        {isLoading ? (
+          <ActivityIndicator size='small' color={Colors.primary} />
+        ) : (
+          <Button
+            color={Colors.accent}
+            title='Crear Pedido'
+            disabled={cartItems.length === 0}
+            onPress={sendOrdenHandler}
+          />
+        )}
       </Card>
       <View>
         <FlatList
